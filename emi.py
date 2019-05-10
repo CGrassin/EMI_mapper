@@ -54,10 +54,11 @@ parser = argparse.ArgumentParser(description='EMI mapping with camera and RTL-SD
 parser.add_argument('-c', '--camera', type=int, help='camera id (default=0)',default=0)
 parser.add_argument('-f', '--frequency', type=float, help='sets the center frequency on the SDR, in MHz (default: 300).',default=300)
 parser.add_argument('-g', '--gain', type=int, help='sets the SDR gain (default: 496).',default=496)
+parser.add_argument('-d', '--device', type=int, help='sets the SDR device (default: 0).',default=0)
 args = parser.parse_args()
 
 # configure SDR device
-sdr = RtlSdr()
+sdr = RtlSdr(args.device)
 sdr.sample_rate = 2.4e6
 sdr.center_freq = args.frequency * 1e6
 sdr.gain = args.gain
