@@ -8,6 +8,8 @@ import matplotlib.pyplot as plt
 from scipy.ndimage.filters import gaussian_filter
 import argparse
 
+scale=10
+
 def gaussian_with_nan(U, sigma=7):
 	"""Computes the gaussian blur of a nupy array with NaNs.
 	"""
@@ -41,7 +43,21 @@ def get_RMS_power(sdr):
 	"""
 	samples = sdr.read_samples(1024*4)
 	freq,psd = scipy.signal.welch(samples,sdr.sample_rate/1e6,nperseg=512,return_onesided=0)
-	return 10*np.log10(np.sqrt(np.mean(psd**2)))
+	return 10*np.log10(np.sqrt(np.mean(psd**2))),samples
+
+# mouse callback function
+def showSpectrum(event,x,y,flags,param):
+    if event == cv2.EVENT_LBUTTONDBLCLK:
+        print(x,y)
+        if specmap is not None:
+        	xb,yb=int(y/scale),int(x/scale)
+        	re=specmap[xb,yb]
+        	if re is not None:
+        		
+	        	plt.close() 
+	        	plt.psd(re, NFFT=1024, Fs=sdr.sample_rate/1e6, Fc=sdr.center_freq/1e6)
+	        	plt.title("spectrum "+str(xb)+" "+str(yb))
+	        	plt.show()
 
 # Thanks to https://www.pyimagesearch.com/2015/05/25/basic-motion-detection-and-tracking-with-python-and-opencv/
 # for the tracking tutorial.
@@ -84,6 +100,8 @@ firstFrame = None
 tracker = cv2.TrackerCSRT_create()
 init_tracking_BB = None
 
+cv2.namedWindow('Preview')
+cv2.setMouseCallback('Preview',showSpectrum)
 # loop while exit button wasn't pressed
 while True:
 	# grab the current frame
@@ -102,6 +120,8 @@ while True:
 		firstFrame = frame
 		powermap = np.empty((len(frame),len(frame[0])))
 		powermap.fill(np.nan)
+		specmap = np.empty((len(frame),len(frame[0])),dtype=np.object)
+		specmap.fill(None)
 		continue
 
 	
@@ -111,7 +131,7 @@ while True:
 		(success, box) = tracker.update(frame)
 
 		# check to see if the tracking was a success
-		power = get_RMS_power(sdr)
+		power,samples = get_RMS_power(sdr)
 		
 		if success:
 			(x, y, w, h) = [int(v) for v in box]
@@ -121,6 +141,8 @@ while True:
 			# fill map
 			print("RMS power",power,"dBm at",x+w/2,";",y+h/2)
 			powermap[int(y+h/4):int(y+h/4*3),int(x+w/4):int(x+w/4*3)] = power
+			specmap[int((y+h/2)/scale),int((x+w/2)/scale)] =samples
+
 			cv2.putText(frame,"RMS power{:.2f}".format(power), (10, 40),cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
 		else:
 			print("RMS power",power,"dBm at unknown location")	
