@@ -97,7 +97,6 @@ while True:
 	# if the first frame is None, initialize it
 	if firstFrame is None:
 		firstFrame = frame
-		firstFrameMask = gray
 		powermap = np.empty((len(frame),len(frame[0])))
 		powermap.fill(np.nan)
 		continue
