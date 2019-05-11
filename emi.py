@@ -76,7 +76,6 @@ else:
 # initialize variables
 powermap = None
 firstFrame = None
-firstFrameMask = None
 
 # Init OpenCV object tracker objects
 tracker = cv2.TrackerCSRT_create()
@@ -94,8 +93,6 @@ while True:
 
 	# resize the frame, convert it to grayscale, and blur it
 	frame = imutils.resize(frame, width=500)
-	gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-	gray = cv2.GaussianBlur(gray, (11, 11), 0)
 
 	# if the first frame is None, initialize it
 	if firstFrame is None:
@@ -105,19 +102,11 @@ while True:
 		powermap.fill(np.nan)
 		continue
 
-	# compute the absolute difference between the current frame and
-	# first frame
-	frameDelta = cv2.absdiff(firstFrameMask, gray)
-	thresh = cv2.threshold(frameDelta, 15, 255, cv2.THRESH_BINARY)[1]
-
-	# dilate the thresholded image to fill in holes, then find contours
-	# on thresholded image
-	thresh = cv2.dilate(thresh, None, iterations=2)
 	
 	# tracking and reading SDR
 	if init_tracking_BB is not None:
 		# grab the new bounding box coordinates of the object
-		(success, box) = tracker.update(thresh)
+		(success, box) = tracker.update(frame)
 
 		# check to see if the tracking was a success
 		if success:
@@ -133,10 +122,6 @@ while True:
 	# show the frame (adding scanned zone overlay)
 	frame[:,:,2] = np.where(np.isnan(powermap),frame[:,:,2],255/2)
 	cv2.imshow("Frame", frame)
-	# debug only
-	#cv2.imshow("Thresh", thresh)
-	#cv2.imshow("Frame Delta", frameDelta)
-	
 	# handle keypresses
 	key = cv2.waitKey(1) & 0xFF
 	if key == ord("s") and init_tracking_BB is None:
@@ -145,7 +130,7 @@ while True:
 			showCrosshair=True)
 
 		# start OpenCV object tracker
-		tracker.init(thresh, init_tracking_BB)
+		tracker.init(frame, init_tracking_BB)
 	elif key == ord("q"):
 		break
 	elif key == ord("r"):
