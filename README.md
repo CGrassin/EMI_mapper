@@ -2,7 +2,15 @@
 
 Mapping near-field electromagnetic parasitic emissions is useful for the design, debug and pre-compliance testing of electronic devices. Unfortunately, there is no simple way to make EM scans with sufficient level of details/accuracy, speed and reasonable cost. Hence, I developed this solution to make **high-resolution** and **fast** 2D maps of RF EMI for PCBs and more.
 
-You can find more information and details on my project page (including more examples): http://charleslabs.fr/en/project-Electromagnetic+interference+mapping
+## Improved version
+* improved probe tracking
+* live preview of heatmap
+* spectrogram view by double clicking on preview
+
+![Arduino Mega RF power map.](https://raw.githubusercontent.com/cfretter/EMI_mapper/master/output/specview.PNG)
+
+
+You can find more information and details on charles project page (including more examples): http://charleslabs.fr/en/project-Electromagnetic+interference+mapping
 
 ## Prerequisites
 
