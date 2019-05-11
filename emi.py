@@ -19,8 +19,11 @@ def gaussian_with_nan(U, sigma=7):
 	W=0*U.copy()+1
 	W[np.isnan(U)]=0
 	WW=gaussian_filter(W,sigma=sigma)
-	
-	return VV/WW
+	o=VV/WW
+	mi,ma=np.nanmin(o),np.nanmax(o)
+	os=((o-mi)*255/(ma-mi))
+	os[np.isnan(U)]=0
+	return np.uint8(os)
 
 def print_sdr_config(sdr):
 	"""Prints the RTL-SDR configuration in the console.
@@ -124,6 +127,10 @@ while True:
 	# show the frame (adding scanned zone overlay)
 	frame[:,:,2] = np.where(np.isnan(powermap),frame[:,:,2],255/2)
 	cv2.imshow("Frame", frame)
+	if init_tracking_BB is not None and powermap is not None and firstFrame is not None:
+		blurred = gaussian_with_nan(powermap, sigma=7)
+		blurredC = cv2.applyColorMap(blurred,cv2.COLORMAP_HOT)
+		cv2.imshow("Preview",cv2.addWeighted(firstFrame, 0.4, blurredC, 0.6,0.0 	))
 	# handle keypresses
 	key = cv2.waitKey(1) & 0xFF
 	if key == ord("s") and init_tracking_BB is None:
