@@ -108,16 +108,19 @@ while True:
 		(success, box) = tracker.update(frame)
 
 		# check to see if the tracking was a success
+		power = get_RMS_power(sdr)
+		
 		if success:
 			(x, y, w, h) = [int(v) for v in box]
 			# print bounding box
 			cv2.rectangle(frame, (x, y), (x + w, y + h),
 				(0, 255, 0), 2)
 			# fill map
-			power = get_RMS_power(sdr)
 			print("RMS power",power,"dBm at",x+w/2,";",y+h/2)
 			powermap[int(y+h/4):int(y+h/4*3),int(x+w/4):int(x+w/4*3)] = power
-			
+			cv2.putText(frame,"RMS power{:.2f}".format(power), (10, 40),cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
+		else:
+			print("RMS power",power,"dBm at unknown location")	
 	# show the frame (adding scanned zone overlay)
 	frame[:,:,2] = np.where(np.isnan(powermap),frame[:,:,2],255/2)
 	cv2.imshow("Frame", frame)
