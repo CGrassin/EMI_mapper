@@ -27,9 +27,9 @@ To make an EM map:
 5. Scan the DUT by moving the probe,
 6. Press "Q" to exit. If a scan was made, the result is displayed.
 
-Call with `python3 emi.py -h` to view the help (arguments description).
+Call with `python3 camera_emi_mapper.py -h` to view the help (arguments description).
 
-Typical use: `python3 emi.py -c 1 -f 100` (start the script using a 100MHz center frequency and camera id 1).
+Typical use: `python3 camera_emi_mapper.py -c 1 -f 100` (start the script using a 100MHz center frequency and camera id 1).
 
 ## Sample result
 
