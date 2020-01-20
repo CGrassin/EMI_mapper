@@ -54,7 +54,7 @@ def main():
     sdr.center_freq = frequency * 1e6
     sdr.gain = gain
     sdr.set_agc_mode(0)
-    power = emi.get_RMS_power(sdr) #First read doesn't work
+    power = camera_emi_mapper.get_RMS_power(sdr) #First read doesn't work
     
     # Prepare canvas
     powermap = np.empty((gridSize*pixelPerMM,gridSize*pixelPerMM))
@@ -95,7 +95,7 @@ def main():
             send_gcode(s,b'M400') # Wait for current moves to finish
             
             # Measure
-            power = emi.get_RMS_power(sdr)
+            power = camera_emi_mapper.get_RMS_power(sdr)
             print("RMS power",power,"dBm at (",x*gridStep,"mm;",y*gridStep, "mm)")
             powermap[int(y*cell_size):int(y*cell_size+cell_size),int(x*cell_size):int(x*cell_size+cell_size)] = power
     
@@ -107,7 +107,7 @@ def main():
     sdr.close()
     
     # Display picture
-    blurred = emi.gaussian_with_nan(powermap, sigma=3*pixelPerMM)
+    blurred = camera_emi_mapper.gaussian_with_nan(powermap, sigma=3*pixelPerMM)
     plt.imshow(blurred, cmap='hot', interpolation='nearest',alpha=1, extent=[0,gridSize,0,gridSize])
     plt.title("EMI map (min. "+"%.2f" % np.nanmin(powermap)+" dBm, max. "+"%.2f" % np.nanmax(powermap)+" dBm)")
     plt.xlabel("mm")
