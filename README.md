@@ -13,7 +13,7 @@ Hardware requirements:
 
 Software dependencies for the python scripts:
 * OpenCV (`sudo apt install python3-opencv && pip3 install opencv-contrib-python imutils setuptools`)
-* Pyserial (`pip3 instal pyserial`)
+* Pyserial (`pip3 install pyserial`)
 * pyrtlsdr (`sudo apt install rtl-sdr && pip3 install pyrtlsdr`)
 * numpy, scipy, matplotlib (`pip3 install scipy numpy matplotlib`)
 
